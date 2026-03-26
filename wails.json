@@ -1,0 +1,16 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "aiguard",
+  "outputfilename": "AIGuard",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:url": "http://localhost:5173",
+  "Info": {
+    "companyName": "Your Company",
+    "productName": "AIGuard",
+    "productVersion": "0.2.0",
+    "copyright": "Copyright (c) Your Company",
+    "comments": "Built using Wails"
+  }
+}

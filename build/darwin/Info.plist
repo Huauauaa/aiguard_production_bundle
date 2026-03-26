@@ -1,0 +1,15 @@
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleName</key><string>AIGuard</string>
+  <key>CFBundleExecutable</key><string>AIGuard</string>
+  <key>CFBundleIdentifier</key><string>com.example.aiguard</string>
+  <key>CFBundleVersion</key><string>0.2.0</string>
+  <key>CFBundleShortVersionString</key><string>0.2.0</string>
+  <key>LSMinimumSystemVersion</key><string>10.13.0</string>
+  <key>NSHighResolutionCapable</key><string>true</string>
+  <key>LSApplicationCategoryType</key><string>public.app-category.developer-tools</string>
+  <key>NSHumanReadableCopyright</key><string>© Your Company</string>
+</dict>
+</plist>

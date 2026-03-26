@@ -1,0 +1,33 @@
+openai:
+  base_url: "http://127.0.0.1:8000/v1"
+  api_key: "EMPTY"
+  default_model: "Qwen/Qwen3-Coder-30B-A3B-Instruct"
+
+runtime:
+  request_timeout_sec: 240
+  concurrency: 4
+  max_retry: 2
+  safe_input_tokens: 160000
+  reserved_output_tokens: 12000
+  log_level: "info"
+
+review:
+  workspace_dir: "./workspace"
+  diff_strategy: "merge_base"
+  max_changed_files: 200
+  max_hunks_per_file: 40
+  export_formats: ["html", "md", "json"]
+  enable_project_brief: true
+  enable_prescan: true
+  redact_secrets_before_llm: true
+
+rules:
+  custom_rule_file: "./examples/AIGUARD.md"
+  ignore:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - "coverage/**"
+    - "vendor/**"
+    - "*.min.js"
+    - "*.lock"

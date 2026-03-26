@@ -1,0 +1,12 @@
+{
+  "source": ["./build/bin/AIGuard.app"],
+  "bundle_id": "com.example.aiguard",
+  "apple_id": {
+    "username": "YOUR_APPLE_ID@example.com",
+    "password": "YOUR_APP_SPECIFIC_PASSWORD",
+    "provider": "YOUR_TEAM_ID"
+  },
+  "sign": {
+    "application_identity": "Developer ID Application: Your Name (TEAMID)"
+  }
+}

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ .Title }}</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background:#0f172a; color:#e2e8f0; padding:32px; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius:16px; padding:20px; margin-bottom:20px; }
+    h1,h2,h3 { margin:0 0 12px 0; }
+    h1 { font-size:28px; }
+    h2 { font-size:20px; margin-top:28px; }
+    .grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:16px; }
+    .metric { background:#0b1220; border:1px solid #243244; border-radius:14px; padding:16px; }
+    .metric .label { color:#94a3b8; font-size:13px; }
+    .metric .value { font-size:26px; font-weight:700; margin-top:8px; }
+    .finding { border-top:1px dashed #334155; padding-top:16px; margin-top:16px; }
+    .tag { display:inline-block; padding:4px 10px; border-radius:999px; background:#1e293b; margin-right:8px; font-size:12px; }
+    .muted { color:#94a3b8; }
+    ul { margin:8px 0 0 20px; }
+    code { background:#0b1220; padding:2px 6px; border-radius:6px; }
+    .health { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:14px; }
+    .health .metric .value { font-size:22px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>{{ .Title }}</h1>
+    <div class="muted">生成时间：{{ .CreatedAt }}</div>
+    <div class="muted">仓库：{{ .Scope.RepoURL }}</div>
+    <div class="muted">分支：{{ .Scope.SourceBranch }} -> {{ .Scope.TargetBranch }}</div>
+    <div class="muted">变更文件数：{{ .Scope.ChangedFiles }}</div>
+  </div>
+
+  <h2>1. 问题清单</h2>
+  <div class="card">
+    {{ if .Findings }}
+      {{ range .Findings }}
+        <div class="finding">
+          <h3>{{ .ID }}：{{ .Title }}（{{ .Severity }}）</h3>
+          <div><span class="tag">{{ .Category }}</span><span class="tag">{{ .Confidence }}</span></div>
+          <p><strong>文件：</strong><code>{{ .File }}</code></p>
+          <p><strong>行号：</strong>{{ .LineStart }} - {{ .LineEnd }}</p>
+          <p><strong>详细描述：</strong>{{ .Description }}</p>
+          <p><strong>影响分析：</strong>{{ .Impact }}</p>
+          <p><strong>证据：</strong>{{ .Evidence }}</p>
+          <p><strong>修复建议：</strong>{{ .Recommendation }}</p>
+        </div>
+      {{ end }}
+    {{ else }}
+      <p>本次未发现可定位的问题。</p>
+    {{ end }}
+  </div>
+
+  <h2>2. 整体统计</h2>
+  <div class="grid">
+    <div class="metric"><div class="label">高（高危+严重）</div><div class="value">{{ .Summary.High }}</div></div>
+    <div class="metric"><div class="label">中（一般）</div><div class="value">{{ .Summary.Medium }}</div></div>
+    <div class="metric"><div class="label">低（建议）</div><div class="value">{{ .Summary.Low }}</div></div>
+    <div class="metric"><div class="label">总计</div><div class="value">{{ .Summary.Total }}</div></div>
+  </div>
+
+  <h2>3. 代码质量与健康度分析报告</h2>
+  <div class="health">
+    <div class="metric"><div class="label">安全性</div><div class="value">{{ .Health.Security }}</div></div>
+    <div class="metric"><div class="label">性能</div><div class="value">{{ .Health.Performance }}</div></div>
+    <div class="metric"><div class="label">健壮性</div><div class="value">{{ .Health.Robustness }}</div></div>
+    <div class="metric"><div class="label">可维护性</div><div class="value">{{ .Health.Maintainability }}</div></div>
+    <div class="metric"><div class="label">框架最佳实践</div><div class="value">{{ .Health.FrameworkPractice }}</div></div>
+  </div>
+
+  <h2>4. 其他待补充</h2>
+  <div class="card">
+    <ul>
+      {{ range .Notes }}
+        <li>{{ . }}</li>
+      {{ end }}
+    </ul>
+  </div>
+
+  <h2>项目画像</h2>
+  <div class="card">
+    <p><strong>项目用途：</strong>{{ .ProjectBrief.Purpose }}</p>
+    <p><strong>技术栈：</strong>{{ range $index, $item := .ProjectBrief.TechStack }}{{ if $index }}, {{ end }}{{ $item }}{{ end }}</p>
+    <p><strong>框架：</strong>{{ range $index, $item := .ProjectBrief.Frameworks }}{{ if $index }}, {{ end }}{{ $item }}{{ end }}</p>
+    <p><strong>模块：</strong>{{ range $index, $item := .ProjectBrief.Modules }}{{ if $index }}, {{ end }}{{ $item }}{{ end }}</p>
+    <p><strong>高敏感区域：</strong>{{ range $index, $item := .ProjectBrief.SensitiveAreas }}{{ if $index }}, {{ end }}{{ $item }}{{ end }}</p>
+  </div>
+</body>
+</html>
