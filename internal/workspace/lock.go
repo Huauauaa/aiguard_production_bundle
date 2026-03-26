@@ -1,29 +1,57 @@
 package workspace
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type Locker struct {
-	mu    sync.Mutex
-	locks map[string]*sync.Mutex
+	mu        sync.Mutex
+	locks     map[string]*lockEntry
+	lastClean time.Time
+}
+
+type lockEntry struct {
+	mu       *sync.Mutex
+	lastUsed time.Time
 }
 
 func NewLocker() *Locker {
 	return &Locker{
-		locks: map[string]*sync.Mutex{},
+		locks:     map[string]*lockEntry{},
+		lastClean: time.Now(),
 	}
 }
 
 func (l *Locker) Acquire(key string) func() {
 	l.mu.Lock()
-	lock, ok := l.locks[key]
+	entry, ok := l.locks[key]
 	if !ok {
-		lock = &sync.Mutex{}
-		l.locks[key] = lock
+		entry = &lockEntry{
+			mu:       &sync.Mutex{},
+			lastUsed: time.Now(),
+		}
+		l.locks[key] = entry
 	}
+	entry.lastUsed = time.Now()
+	l.cleanIfNeeded()
 	l.mu.Unlock()
 
-	lock.Lock()
+	entry.mu.Lock()
 	return func() {
-		lock.Unlock()
+		entry.mu.Unlock()
+	}
+}
+
+func (l *Locker) cleanIfNeeded() {
+	if time.Since(l.lastClean) < 10*time.Minute {
+		return
+	}
+	l.lastClean = time.Now()
+	threshold := time.Now().Add(-30 * time.Minute)
+	for key, entry := range l.locks {
+		if entry.lastUsed.Before(threshold) {
+			delete(l.locks, key)
+		}
 	}
 }

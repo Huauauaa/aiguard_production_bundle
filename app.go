@@ -196,7 +196,8 @@ func (a *App) ClearCache(req uiapi.RuntimeContextRequest) (uiapi.CacheClearResul
 func (a *App) resolveRuntime(configPath, workspaceOverride string) (config.Config, workspace.Layout, string, string, error) {
 	cfg, _ := config.Load("")
 	if strings.TrimSpace(configPath) != "" {
-		loaded, err := config.Load(configPath)
+		cleanPath := filepath.Clean(configPath)
+		loaded, err := config.Load(cleanPath)
 		if err != nil {
 			if !os.IsNotExist(err) {
 				return cfg, workspace.Layout{}, "", "", err
@@ -210,6 +211,7 @@ func (a *App) resolveRuntime(configPath, workspaceOverride string) (config.Confi
 	if workspaceDir == "" {
 		workspaceDir = cfg.Review.WorkspaceDir
 	}
+	workspaceDir = filepath.Clean(workspaceDir)
 	layout, err := workspace.Prepare(workspaceDir)
 	if err != nil {
 		return cfg, layout, "", "", err

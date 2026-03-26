@@ -46,6 +46,13 @@ func (m *Manager) OpenCachedRepo(reposDir, repoIdentity string) (string, error) 
 	return target, nil
 }
 
+func validateRepoURL(repoURL string) error {
+	if strings.Contains(repoURL, ";") || strings.Contains(repoURL, "|") || strings.Contains(repoURL, "&") {
+		return errors.New("仓库地址包含非法字符")
+	}
+	return nil
+}
+
 func (m *Manager) PrepareRemoteRepo(ctx context.Context, repoURLs []string, reposDir, repoIdentity string) (string, string, error) {
 	repoIdentity = strings.TrimSpace(repoIdentity)
 	if repoIdentity == "" {
@@ -54,6 +61,11 @@ func (m *Manager) PrepareRemoteRepo(ctx context.Context, repoURLs []string, repo
 	candidates := compactStrings(repoURLs)
 	if len(candidates) == 0 {
 		return "", "", errors.New("仓库地址为空")
+	}
+	for _, url := range candidates {
+		if err := validateRepoURL(url); err != nil {
+			return "", "", fmt.Errorf("仓库地址校验失败: %w", err)
+		}
 	}
 
 	target := filepath.Join(reposDir, repoKey(repoIdentity)+".git")
