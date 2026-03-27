@@ -26,6 +26,9 @@ review:
   enable_project_brief: true
   enable_prescan: true
   redact_secrets_before_llm: true
+  # PR Web 域名/跳转基址，用于生成代码跳转链接:
+  # 链接格式: {base}/files?filePath={filepath}#L{line}
+  code_browse_base_url: ""
 
 rules:
   custom_rule_file: "./AIGUARD.md"

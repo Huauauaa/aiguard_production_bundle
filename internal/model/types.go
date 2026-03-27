@@ -150,4 +150,5 @@ type Report struct {
 	Comparison    ComparisonResult `json:"comparison"`
 	SkippedFiles  []string         `json:"skippedFiles,omitempty"`
 	ArtifactsHint []string         `json:"artifactsHint,omitempty"`
+	CodeBrowseBaseURL string       `json:"codeBrowseBaseUrl,omitempty"`
 }

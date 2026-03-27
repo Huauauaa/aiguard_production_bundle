@@ -158,6 +158,7 @@ func (o *Orchestrator) Run(ctx context.Context, taskID string, req uiapi.StartRe
 		Health:       health,
 		Notes:        notes,
 		Comparison:   comparison,
+		CodeBrowseBaseURL: strings.TrimRight(strings.TrimSpace(cfg.Review.CodeBrowseBaseURL), "/"),
 		ArtifactsHint: []string{
 			"artifacts/diff.json",
 			"artifacts/project_brief.json",

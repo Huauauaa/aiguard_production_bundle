@@ -18,6 +18,8 @@
     .muted { color:#94a3b8; }
     ul { margin:8px 0 0 20px; }
     code { background:#0b1220; padding:2px 6px; border-radius:6px; }
+    a { color:#93c5fd; text-decoration:none; }
+    a:hover { text-decoration:underline; }
     .health { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:14px; }
     .health .metric .value { font-size:22px; }
   </style>
@@ -38,8 +40,13 @@
         <div class="finding">
           <h3>{{ .ID }}：{{ .Title }}（{{ .Severity }}）</h3>
           <div><span class="tag">{{ .Category }}</span><span class="tag">{{ .Confidence }}</span></div>
-          <p><strong>文件：</strong><code>{{ .File }}</code></p>
-          <p><strong>行号：</strong>{{ .LineStart }} - {{ .LineEnd }}</p>
+          {{ $u := codeJumpURL .File .LineStart }}
+          <p><strong>文件：</strong>
+            {{ if $u }}<a href="{{ $u }}"><code>{{ .File }}</code></a>{{ else }}<code>{{ .File }}</code>{{ end }}
+          </p>
+          <p><strong>行号：</strong>
+            {{ if $u }}<a href="{{ $u }}">{{ .LineStart }} - {{ .LineEnd }}</a>{{ else }}{{ .LineStart }} - {{ .LineEnd }}{{ end }}
+          </p>
           <p><strong>详细描述：</strong>{{ .Description }}</p>
           <p><strong>影响分析：</strong>{{ .Impact }}</p>
           <p><strong>证据：</strong>{{ .Evidence }}</p>

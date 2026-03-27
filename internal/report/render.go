@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -76,8 +77,16 @@ func renderMarkdown(rpt model.Report) string {
 	b.WriteString("## 1. 问题清单\n\n")
 	for i, item := range rpt.Findings {
 		b.WriteString(fmt.Sprintf("### %03d：%s（%s）\n", i+1, item.Title, item.Severity))
-		b.WriteString(fmt.Sprintf("- 文件：`%s`\n", item.File))
-		b.WriteString(fmt.Sprintf("- 行号：%d-%d\n", item.LineStart, item.LineEnd))
+		if link := codeJumpURL(rpt.CodeBrowseBaseURL, item.File, item.LineStart); link != "" {
+			b.WriteString(fmt.Sprintf("- 文件：[`%s`](%s)\n", item.File, link))
+		} else {
+			b.WriteString(fmt.Sprintf("- 文件：`%s`\n", item.File))
+		}
+		if link := codeJumpURL(rpt.CodeBrowseBaseURL, item.File, item.LineStart); link != "" {
+			b.WriteString(fmt.Sprintf("- 行号：[%d-%d](%s)\n", item.LineStart, item.LineEnd, link))
+		} else {
+			b.WriteString(fmt.Sprintf("- 行号：%d-%d\n", item.LineStart, item.LineEnd))
+		}
 		b.WriteString(fmt.Sprintf("- 分类：%s\n", item.Category))
 		b.WriteString(fmt.Sprintf("- 详细描述：%s\n", item.Description))
 		b.WriteString(fmt.Sprintf("- 影响分析：%s\n", item.Impact))
@@ -111,7 +120,11 @@ func renderHTML(rpt model.Report) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tpl, err := template.New("report").Parse(string(data))
+	tpl, err := template.New("report").Funcs(template.FuncMap{
+		"codeJumpURL": func(file string, line int) string {
+			return codeJumpURL(rpt.CodeBrowseBaseURL, file, line)
+		},
+	}).Parse(string(data))
 	if err != nil {
 		return "", err
 	}
@@ -120,4 +133,13 @@ func renderHTML(rpt model.Report) (string, error) {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+func codeJumpURL(baseURL, filePath string, line int) string {
+	baseURL = strings.TrimRight(strings.TrimSpace(baseURL), "/")
+	filePath = strings.TrimSpace(filePath)
+	if baseURL == "" || filePath == "" || line <= 0 {
+		return ""
+	}
+	return fmt.Sprintf("%s/files?filePath=%s#L%d", baseURL, url.QueryEscape(filePath), line)
 }

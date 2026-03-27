@@ -43,6 +43,9 @@ type ReviewConfig struct {
 	EnableProjectBrief     bool     `yaml:"enable_project_brief"`
 	EnablePreScan          bool     `yaml:"enable_prescan"`
 	RedactSecretsBeforeLLM bool     `yaml:"redact_secrets_before_llm"`
+	// Base URL of the PR web portal. Used to generate code-jump hyperlinks in reports.
+	// Example: https://pr.example.com
+	CodeBrowseBaseURL string `yaml:"code_browse_base_url"`
 }
 
 type RulesConfig struct {
@@ -186,6 +189,7 @@ func (c *Config) normalize() {
 	c.OpenAI.Proxy.HTTP = strings.TrimSpace(c.OpenAI.Proxy.HTTP)
 	c.OpenAI.Proxy.HTTPS = strings.TrimSpace(c.OpenAI.Proxy.HTTPS)
 	c.OpenAI.Proxy.NoProxy = strings.TrimSpace(c.OpenAI.Proxy.NoProxy)
+	c.Review.CodeBrowseBaseURL = strings.TrimSpace(c.Review.CodeBrowseBaseURL)
 
 	c.Git.PreferredProtocol = strings.ToLower(strings.TrimSpace(c.Git.PreferredProtocol))
 	if c.Git.PreferredProtocol != "ssh" && c.Git.PreferredProtocol != "https" {
@@ -282,6 +286,7 @@ func (c *Config) applyEnvOverrides() {
 	setString(&c.OpenAI.Proxy.HTTPS, "AIGUARD_OPENAI_PROXY_HTTPS", "OPENAI_PROXY_HTTPS")
 	setString(&c.OpenAI.Proxy.NoProxy, "AIGUARD_OPENAI_PROXY_NO_PROXY", "OPENAI_PROXY_NO_PROXY")
 	setString(&c.Review.WorkspaceDir, "AIGUARD_WORKSPACE_DIR")
+	setString(&c.Review.CodeBrowseBaseURL, "AIGUARD_CODE_BROWSE_BASE_URL")
 	setString(&c.Runtime.LogLevel, "AIGUARD_LOG_LEVEL")
 	setInt(&c.Runtime.Concurrency, "AIGUARD_CONCURRENCY")
 	setInt(&c.Runtime.SafeInputTokens, "AIGUARD_SAFE_INPUT_TOKENS")
